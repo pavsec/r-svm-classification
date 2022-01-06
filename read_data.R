@@ -1,10 +1,11 @@
 rm(list=ls())
 require(ggplot2)
 require(hash)
+library(lubridate)
 
 # setwd('D:/fax/Collage/9/uznl/projekt/r-svm-classification')
 # set class
-dataset = 'walk'
+dataset = 'car'
 class = hash()
 class[['car']] = 0
 class[['bus']] = 1
@@ -25,8 +26,8 @@ colnames(data) = c('x', 'y', 'z', 'timestamp')
 print(head(data, 5))
 data$timestamp = as.POSIXct(data$timestamp)
 
-# data1 = data[data$timestamp <= (data$timestamp[1]) + minutes(15),]
-data1 = data[data$timestamp > (data$timestamp[1]) + minutes(15),]
+data1 = data[data$timestamp <= (data$timestamp[1]) + minutes(15),]
+# data1 = data[data$timestamp > (data$timestamp[1]) + minutes(15),]
 print(head(data1, 5))
 
 
@@ -77,7 +78,7 @@ ggplot(df) + geom_line(aes(t, x, color='x')) +
              geom_line(aes(t, z, color='z')) +
              scale_x_datetime() + xlab('Time') + ylab('acceleration')
 
-ggsave(paste('./images/', dataset, '2.png', sep = ''))
+ggsave(paste('./images/', dataset, '1.png', sep = ''))
 
 # save file
-write.csv(df ,paste('./datasets/', dataset, '_clean2.csv', sep = ''), row.names = TRUE)
+write.csv(df ,paste('./datasets/', dataset, '_clean1.csv', sep = ''), row.names = FALSE)
