@@ -2,6 +2,7 @@ require(e1071)
 library(caTools)
 require(ggplot2)
 library(caret)
+library(yardstick)
 
 
 setwd('D:/fax/Collage/9/uznl/projekt/r-svm-classification')
@@ -16,9 +17,9 @@ data$y = as.numeric(data$y)
 data$z = as.numeric(data$z)
 
 #izbaci outliere
-data <- subset(data, x < 2000)
-data <- subset(data, z > -200)
-data <- subset(data, y > -1000)
+data = subset(data, x < 2000)
+data = subset(data, z > -200)
+data = subset(data, y > -1000)
 
 #standardizacija - oduzimanjem srednje vrijednosti od svih znacajki
 data$x = scale(data$x, scale = FALSE)
@@ -40,33 +41,56 @@ classifier = svm(formula = class ~ .,
                  gamma = 100,
                  cross = 10)
 
-print(head(test_set[-4]), 5)
+print('--------------------------')
+print(classifier)
+
 y_pred = predict(classifier, newdata = test_set[-4])
 y_train_pred = predict(classifier, newdata = training_set[-4])
 
-cm = table(test_set[, 4], y_pred)
-cm2 = table(training_set[, 4], y_train_pred )
+print('train confusion matrix')
+print(table(test_set[, 4]))
+train_results = confusionMatrix(data = y_train_pred, reference = training_set[, 4])
+print(train_results)
+set.seed(123)
+truth_predicted = data.frame(
+  obs = training_set[, 4],
+  pred = y_train_pred
+)
+truth_predicted$obs = as.factor(truth_predicted$obs)
+truth_predicted$pred = as.factor(truth_predicted$pred)
 
-print(cm)
-print(cm2)
+cm = conf_mat(truth_predicted, obs, pred)
 
-# #plot only if there are two columns for classification
-# # plot(classifier, training_set)
+autoplot(cm, type = 'heatmap') +
+  scale_fill_gradient(low = 'pink', high = 'cyan')
+
+print('')
+print('test confusion matrix')
+print(table(test_set[, 4]))
+test_results = confusionMatrix(data = y_pred, reference = test_set[, 4])
+print(test_results)
+truth_predicted = data.frame(
+  obs = test_set[, 4],
+  pred = y_pred
+)
+truth_predicted$obs = as.factor(truth_predicted$obs)
+truth_predicted$pred = as.factor(truth_predicted$pred)
+
+cm = conf_mat(truth_predicted, obs, pred)
+
+autoplot(cm, type = 'heatmap') +
+  scale_fill_gradient(low = 'pink', high = 'cyan')
 
 #plot two by two variables
-plot(classifier, training_set, x ~ y)
-plot(classifier, training_set, y ~ z)
-plot(classifier, training_set, x ~ z)
+# plot(classifier, training_set, x ~ y)
+# plot(classifier, training_set, y ~ z)
+# plot(classifier, training_set, x ~ z)
 
-cv_accuracies <- classifier$accuracies
-all.equal(mean(cv_accuracies), classifier$tot.accuracy)
-print(mean(cv_accuracies))
-
+print('--------------------------')
 
 #parameter tuning
 #tune model
 # set.seed (1)
-#optimization - linear model
 # tune.out=tune(svm ,class~.,data=training_set ,kernel ='linear',
 #               ranges =list(cost=10^(-3:2), gamma=10^(-3:2), coef0=10^(-1:1)))
 # tune.out=tune(svm ,class~.,data=training_set,kernel ='radial',
