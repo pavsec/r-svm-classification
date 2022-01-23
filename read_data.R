@@ -34,9 +34,7 @@ for (f in filenames)
     {
       data = read.csv2(paste('./datasets/', f, sep = ''), head = FALSE, sep = ';', colClasses = 'character', skip = 2)
     }
-    # data = read.csv(paste('./datasets/', f, sep = ''), head = FALSE, sep = ',', colClasses = 'character', skip = 2)
     # read data
-    # clean data - each new dataset will have data in span of 15min
     print(head(data, 2))
     data = data[c('V7', 'V8', 'V9', rev(names(data))[1])]
     # print(head(data, 5))
@@ -45,11 +43,6 @@ for (f in filenames)
     colnames(data) = c('x', 'y', 'z', 'timestamp')
     print(head(data, 5))
     data$timestamp = as.POSIXct(data$timestamp)
-
-    # data1 = data[data$timestamp <= (data$timestamp[1]) + minutes(15),]
-    # data1 = data[data$timestamp > (data$timestamp[1]) + minutes(15),]
-    # print(head(data1, 5))
-
 
     # ne mogu zapisat milisekunde pa sam ovako rijesila problem
     # for each second, take mean of recorded values and set that as acceleration in new, clean dataset
@@ -101,7 +94,7 @@ for (f in filenames)
     # ggsave(paste('./images/', f_clean, '.png', sep = ''))
 
     # save file
-    # write.csv(df ,paste('./datasets/', dataset, '_clean1.csv', sep = ''), row.names = FALSE)
+    write.csv(df ,paste('./datasets/', dataset, '_clean1.csv', sep = ''), row.names = FALSE)
 
     file_output_name = './datasets/clean datasets/svm_data2.csv'
     if (file.exists(file_output_name) == TRUE)
@@ -113,8 +106,11 @@ for (f in filenames)
       write.csv(df, file_output_name, row.names = FALSE)
     }
 
-  }
+    #clean data for each dataset
+    file_output_name = substr(f,1,nchar(f)-4)
+    print(file_output_name)
+    write.csv(df, paste('./datasets/clean datasets/', file_output_name, '.csv', sep=''), row.names = FALSE)
 
-  # print(head(data, 1))
+  }
 }
 
