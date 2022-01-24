@@ -15,8 +15,23 @@ bus2 <- read.csv("datasets/clean datasets/bus2.csv", header=TRUE)
 
 car <- rbind(car, car2)
 car <- rbind(car, car3)
+
+car = subset(car, x < 2000)
+car = subset(car, z > -200)
+car = subset(car, y > -1000)
+
 walk <- rbind(walk, walk2)
+
+walk = subset(walk, x < 2000)
+walk = subset(walk, z > -200)
+walk = subset(walk, y > -1000)
+
 bus <- rbind(bus, bus2)
+
+bus = subset(bus, x < 2000)
+bus = subset(bus, z > -200)
+bus = subset(bus, y > -1000)
+
 total <- rbind(car, walk)
 total <- rbind(total, bus)
 total <- na.omit(total)
